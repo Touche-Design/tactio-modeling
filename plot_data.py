@@ -45,12 +45,14 @@ for node in nodes:
 full_weight_values = {}
 full_avg_sensor_values = {}
 full_max_sensor_values = {}
+full_std_sensor_values = {}
 # Per node
 for node_name in full_data:
     print(node_name)
     weight_values = []
     avg_sensor_values = []
     max_sensor_values = []
+    std_sensor_values = []
     for weight in full_data[node_name]:
         current_data = full_data[node_name][weight]
         averaged_data = np.average(np.average(current_data,axis=0))
@@ -58,6 +60,13 @@ for node_name in full_data:
         weight_values.append(weight)
         avg_sensor_values.append(averaged_data)
         max_sensor_values.append(max_data)
+        sample_data = np.array(current_data)
+        if(weight == 602):
+            full_std_sensor_values[node_name] = sample_data[:,2,2]
+
+        #print(np.var(sample_data[:,1,1]))
+        #std_sensor_values.append(np.var(sample_data[:,1,1]))
+        #print(std_sensor_values.append(np.var(sample_data[:,1,1])))
 
 
     # Adds to global quantities
@@ -65,27 +74,38 @@ for node_name in full_data:
     full_avg_sensor_values[node_name] = avg_sensor_values
     full_max_sensor_values[node_name] = max_sensor_values
 
-    fig, (ax0, ax1, ax2) = plt.subplots(nrows=3)
-    fig.suptitle(node_name + " Data Collection", fontsize=16)
 
-    ax0.plot(weight_values,avg_sensor_values, "ro")
-    ax0.set_title('Average Sensor Value vs Weight')
-    ax0.set_ylabel('Sensor Value (mV)')
-    ax0.set_xlabel('Weight (g)')
+
+    #fig, (ax0, ax1, ax2) = plt.subplots(nrows=3)
+    #fig.suptitle(node_name + " Data Collection", fontsize=16)
+#
+    #ax0.plot(weight_values,avg_sensor_values, "ro")
+    #ax0.set_title('Average Sensor Value vs Weight')
+    #ax0.set_ylabel('Sensor Value (mV)')
+    #ax0.set_xlabel('Weight (g)')
+    #
+    #ax1.plot(weight_values,max_sensor_values, "ro")
+    #ax1.set_title('Max Sensor Value vs Weight')
+    #ax1.set_ylabel('Sensor Value (mV)')
+    #ax1.set_xlabel('Weight (g)')
+    #
+    #ax2.loglog(weight_values,avg_sensor_values, "ro")
+    #ax2.set_title('Log Log Max Sensor Value vs Weight')
+    #ax2.set_ylabel('log(Sensor Value) (mV)')
+    #ax2.set_xlabel('log(Weight) (g)')
     
-    ax1.plot(weight_values,max_sensor_values, "ro")
-    ax1.set_title('Max Sensor Value vs Weight')
-    ax1.set_ylabel('Sensor Value (mV)')
-    ax1.set_xlabel('Weight (g)')
-    
-    ax2.loglog(weight_values,avg_sensor_values, "ro")
-    ax2.set_title('Log Log Max Sensor Value vs Weight')
-    ax2.set_ylabel('log(Sensor Value) (mV)')
-    ax2.set_xlabel('log(Weight) (g)')
-    
-    #Fix vertical spacing
-    plt.subplots_adjust(hspace=1)
-    plt.show()
+    ##Fix vertical spacing
+    #plt.subplots_adjust(hspace=1)
+    #plt.show()
+
+
+#print(np.var(full_std_sensor_values['node20'][np.where(full_std_sensor_values['node20']>0)]))
+#print(np.var(full_std_sensor_values['node20res'][np.where(full_std_sensor_values['node20res']>0)]))
+#plt.hist(full_std_sensor_values['node20'][np.where(full_std_sensor_values['node20']>0)], bins='auto',label='node20')
+#plt.show()
+#plt.hist(full_std_sensor_values['node20res'][np.where(full_std_sensor_values['node20res']>0)], bins='auto',label='node20res')
+#plt.legend(loc='upper left')
+#plt.show()
 
 # All nodes
 fig, (ax0, ax1, ax2) = plt.subplots(nrows=3)
