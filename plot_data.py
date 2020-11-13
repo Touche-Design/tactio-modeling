@@ -117,7 +117,6 @@ for node_name in full_data:
 #plt.hist(full_std_sensor_values['node20res'][np.where(full_std_sensor_values['node20res']>0)], bins='auto',label='node20res')
 #plt.legend(loc='upper left')
 #plt.show()
->>>>>>> Stashed changes
 
 # All nodes
 fig, (ax0, ax1, ax2) = plt.subplots(nrows=3)
