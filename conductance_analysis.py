@@ -2,7 +2,7 @@ import json
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
+from scipy.stats import linregress
 import os
 
 
@@ -54,6 +54,7 @@ r2 = 390
 
 full_weight_values = {}
 full_avg_sensor_values = {}
+full_regression_param = {}
 
 for node_name in full_data:
     weight_values = []
@@ -78,13 +79,11 @@ for node_name in full_data:
             time_avg_center_sample[0][1] = current_conductance_time_avg[1][2]
             time_avg_center_sample[1][0] = current_conductance_time_avg[2][1]
             time_avg_center_sample[1][1] = current_conductance_time_avg[2][2]
-    
 
             averaged_data = np.average(time_avg_center_sample)
             weight_values.append(weight)
             avg_sensor_values.append(averaged_data)
             sample_data = np.array(current_data)
-
 
             #print(np.var(sample_data[:,1,1]))
             #std_sensor_values.append(np.var(sample_data[:,1,1]))
@@ -99,9 +98,15 @@ for node_name in full_data:
     full_weight_values[node_name] = full_weight_values_node
     full_avg_sensor_values_node[position] = avg_sensor_values
 
-    plt.plot(weight_values, avg_sensor_values, '.')
+    plt.plot(weight_values, avg_sensor_values, '.', label = node_name)
+    weight_values = np.array(weight_values)
+    slope, intercept, r_value, p_value, std_err = linregress(weight_values, avg_sensor_values)
+    full_regression_param[node_name] = (slope, intercept)
+    plt.plot(weight_values, weight_values * slope + intercept,'-', label = node_name + " regression")
     plt.title(node_name)
     plt.xlabel("Applied Weight (g)")
     plt.ylabel("Conductance (S)")
 
+print(full_regression_param)
+plt.legend()
 plt.show()
