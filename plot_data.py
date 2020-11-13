@@ -59,13 +59,24 @@ for node_name in full_data:
     std_sensor_values = []
     full_weight_values_node = {}
     full_avg_sensor_values_node = {}
+    center_position_avg_sensor_values_node = {}
     full_max_sensor_values_node = {}
     for position in position_label:
         for weight in full_data[node_name][position]:
 
             current_data = full_data[node_name][position]
-            current_data = current_data[weight]
-            averaged_data = np.average(np.average(current_data,axis=0))
+            current_data = np.array(current_data[weight])
+            current_data_time_avg = np.average(current_data,axis=0)
+
+            # Samples the center 4 elements 
+            time_avg_center_sample = np.zeros((2,2))
+            time_avg_center_sample[0][0] = current_data_time_avg[1][1]
+            time_avg_center_sample[0][1] = current_data_time_avg[1][2]
+            time_avg_center_sample[1][0] = current_data_time_avg[2][1]
+            time_avg_center_sample[1][1] = current_data_time_avg[2][2]
+    
+
+            averaged_data = np.average(time_avg_center_sample)
             max_data = np.max(current_data)
             weight_values.append(weight)
             avg_sensor_values.append(averaged_data)
@@ -82,6 +93,16 @@ for node_name in full_data:
         full_weight_values_node[position] = weight_values
         full_avg_sensor_values_node[position] = avg_sensor_values
         full_max_sensor_values_node[position] = max_sensor_values
+
+    center_all_pos_avg_sensor_values_node = {}
+    for position in position_label:
+        for weight in full_data[node_name][position]:
+            print(weight)
+            print(full_avg_sensor_values_node[position])
+            center_all_pos_avg_sensor_values_node[weight] += full_avg_sensor_values_node[position][weight]
+    print(center_all_pos_avg_sensor_values_node)
+
+
 
     full_weight_values[node_name] = full_weight_values_node
     full_avg_sensor_values[node_name] = full_avg_sensor_values_node
