@@ -98,15 +98,21 @@ for node_name in full_data:
     full_weight_values[node_name] = full_weight_values_node
     full_avg_sensor_values_node[position] = avg_sensor_values
 
+    plt.subplot(1,2,1)
     plt.plot(weight_values, avg_sensor_values, '.', label = node_name)
     weight_values = np.array(weight_values)
     slope, intercept, r_value, p_value, std_err = linregress(weight_values, avg_sensor_values)
+
     full_regression_param[node_name] = (slope, intercept)
+
     plt.plot(weight_values, weight_values * slope + intercept,'-', label = node_name + " regression")
-    plt.title(node_name)
+    plt.title(node_name + "Regression")
     plt.xlabel("Applied Weight (g)")
     plt.ylabel("Conductance (S)")
-
+    plt.legend()
+    plt.subplot(1,2,2)
+    plt.plot(weight_values, weight_values * slope + intercept - avg_sensor_values, '.', label = node_name)
+    plt.legend()
+    plt.title(node_name + " Residual")
 print(full_regression_param)
-plt.legend()
 plt.show()
