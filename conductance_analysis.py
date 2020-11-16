@@ -57,11 +57,11 @@ full_avg_sensor_values = {}
 full_regression_param = {}
 
 for node_name in full_data:
-    weight_values = []
+    pressure_values = []
     avg_sensor_values = []
     max_sensor_values = []
     std_sensor_values = []
-    full_weight_values_node = {}
+    full_pressure_values_node = {}
     full_avg_sensor_values_node = {}
     center_position_avg_sensor_values_node = {}
     full_max_sensor_values_node = {}
@@ -79,9 +79,17 @@ for node_name in full_data:
             time_avg_center_sample[0][1] = current_conductance_time_avg[1][2]
             time_avg_center_sample[1][0] = current_conductance_time_avg[2][1]
             time_avg_center_sample[1][1] = current_conductance_time_avg[2][2]
+            
+            # 0.125 in -> 0.003175 m
+            # looking at 4 points so area is 4x
+            area = 0.003175**2 * 4
+            # weight in grams
+            force = weight/1000*9.81
+
+            pressure = force / area
 
             averaged_data = np.average(time_avg_center_sample)
-            weight_values.append(weight)
+            pressure_values.append(pressure)
             avg_sensor_values.append(averaged_data)
             sample_data = np.array(current_data)
 
@@ -89,22 +97,20 @@ for node_name in full_data:
             #std_sensor_values.append(np.var(sample_data[:,1,1]))
             #print(std_sensor_values.append(np.var(sample_data[:,1,1])))
 
-
         # Adds to global quantities
-        full_weight_values_node[position] = weight_values
+        full_pressure_values_node[position] = pressure_values
         full_avg_sensor_values_node[position] = avg_sensor_values
         full_max_sensor_values_node[position] = max_sensor_values
 
-    full_weight_values[node_name] = full_weight_values_node
+    full_weight_values[node_name] = full_pressure_values_node
     full_avg_sensor_values_node[position] = avg_sensor_values
-
-    plt.plot(weight_values, avg_sensor_values, '.', label = node_name)
-    weight_values = np.array(weight_values)
-    slope, intercept, r_value, p_value, std_err = linregress(weight_values, avg_sensor_values)
+    plt.plot(pressure_values, avg_sensor_values, '.', label = node_name)
+    pressure_values = np.array(pressure_values)
+    slope, intercept, r_value, p_value, std_err = linregress(pressure_values, avg_sensor_values)
     full_regression_param[node_name] = (slope, intercept)
-    plt.plot(weight_values, weight_values * slope + intercept,'-', label = node_name + " regression")
-    plt.title(node_name)
-    plt.xlabel("Applied Weight (g)")
+    plt.plot(pressure_values, pressure_values * slope + intercept,'-', label = node_name + " regression")
+    plt.title("Conductance vs. Applied Pressure")
+    plt.xlabel("Applied Pressure (Pa)")
     plt.ylabel("Conductance (S)")
 
 print(full_regression_param)
