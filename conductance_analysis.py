@@ -6,7 +6,6 @@ from scipy.stats import linregress
 import os
 
 
-
 position_label = ['bl', 'br', 'tl','tr']
 file_path = 'cal_data'
 files_present = []
@@ -52,9 +51,23 @@ for node in nodes:
 voltage = 3300
 r2 = 390
 
-full_weight_values = {}
+full_pressure_values = {}
 full_avg_sensor_values = {}
 full_regression_param = {}
+full_cond_press_regression_param = {}
+fig1, (ax0, ax1) = plt.subplots(ncols=2)
+fig2, (ax2, ax3) = plt.subplots(ncols=2,sharey=True)
+ax0.set_title("Conductance vs. Applied Pressure")
+ax0.set_xlabel("Applied Pressure (kPa)")
+ax0.set_ylabel("Conductance (S)")
+ax1.set_title("Total Residual")
+
+ax2.set_title("Conductance vs. Applied Pressure")
+ax2.set_xlabel("Applied Pressure (kPa)")
+ax2.set_ylabel("Conductance (S)")
+ax3.set_title("Regression")
+ax3.set_xlabel("Applied Pressure (kPa)")
+ax3.set_ylabel("Conductance (S)")
 
 for node_name in full_data:
     pressure_values = []
@@ -84,9 +97,10 @@ for node_name in full_data:
             # looking at 4 points so area is 4x
             area = 0.003175**2 * 4
             # weight in grams
-            force = weight/1000*9.81
+            force = (weight/1000)*9.81
 
-            pressure = force / area
+            #In KPa
+            pressure = force / area / 1000
 
             averaged_data = np.average(time_avg_center_sample)
             pressure_values.append(pressure)
@@ -99,25 +113,63 @@ for node_name in full_data:
 
         # Adds to global quantities
         full_pressure_values_node[position] = pressure_values
+        full_pressure_values[node_name] = np.array(pressure_values)
         full_avg_sensor_values_node[position] = avg_sensor_values
         full_max_sensor_values_node[position] = max_sensor_values
-
-    full_weight_values[node_name] = full_pressure_values_node
-    full_avg_sensor_values_node[position] = avg_sensor_values
-    plt.subplot(1,2,1)
-    plt.plot(pressure_values, avg_sensor_values, '.', label = node_name)
+    
+    ax0.plot(pressure_values, avg_sensor_values, '.', label = node_name)
+    ax2.plot(pressure_values, avg_sensor_values, '.', label = node_name)
     pressure_values = np.array(pressure_values)
     slope, intercept, r_value, p_value, std_err = linregress(pressure_values, avg_sensor_values)
     full_regression_param[node_name] = (slope, intercept)
-    plt.plot(pressure_values, pressure_values * slope + intercept,'-', label = node_name + " regression")
-    plt.title("Conductance vs. Applied Pressure")
-    plt.xlabel("Applied Pressure (Pa)")
-    plt.ylabel("Conductance (S)")
-    plt.legend()
-    plt.subplot(1,2,2)
-    plt.plot(pressure_values, pressure_values * slope + intercept - avg_sensor_values, '.', label = node_name)
-    plt.legend()
-    plt.title(node_name + " Residual")
+    ax1.plot(pressure_values, pressure_values * slope + intercept - avg_sensor_values, '.', label = node_name)
 
-print(full_regression_param)
+    slope_2, intercept_2, r_value_2, p_value_2, std_err_2 = linregress(avg_sensor_values,pressure_values)
+
+    full_cond_press_regression_param[node_name] = (slope_2, intercept_2)
+
+ax2.set_prop_cycle(None)
+max_offset = 0
+min_offset = 999
+max_slope_regression = 0
+min_slope_regression = 999
+average_slope_holder = 0
+average_offset_holder = 0
+
+for node_name in full_regression_param:
+    current_slope = full_regression_param[node_name][0] 
+    current_offset = full_regression_param[node_name][1]
+    ax3.plot(full_pressure_values[node_name], full_pressure_values[node_name] * current_slope + current_offset,'-', label = node_name + " regression")
+
+    average_slope_holder = average_slope_holder+ current_slope
+    average_offset_holder = average_offset_holder+current_offset
+
+    if current_slope > max_slope_regression:
+        max_slope_regression = current_slope
+    
+    if current_slope < min_slope_regression:
+        min_slope_regression = current_slope
+
+    if current_offset > max_offset:
+        max_offset = current_offset
+    
+    if current_offset < min_offset:
+        min_offset = current_offset
+
+ax0.legend()
+ax2.legend()
+
+average_slope_holder = average_slope_holder/len(nodes)
+average_offset_holder = average_offset_holder/len(nodes)
+
+pressure_values = np.arange(start=0, stop=250, step=1)
+max_regression = pressure_values*max_slope_regression + max_offset
+min_regression = pressure_values*min_slope_regression + min_offset
+ave_regression = pressure_values*average_slope_holder + average_offset_holder
+ax3.plot(pressure_values, max_regression,'--',color='black',alpha=0.5)
+ax3.plot(pressure_values, min_regression,'--',color='black',alpha=0.5)
+ax3.fill_between(pressure_values, max_regression, min_regression,color='black',alpha=0.1)
+ax3.plot(pressure_values,ave_regression,'-.',color='black',label='average regression')
+ax3.legend()
+print(full_cond_press_regression_param)
 plt.show()
