@@ -73,7 +73,7 @@ fig4, (ax6, ax7) = plt.subplots(ncols=2)
 fig5, (ax8, ax9) = plt.subplots(ncols=2)
 fig6, (ax10, ax11) = plt.subplots(ncols=2)
 
-ax0.set_title("Data Scatter Plot")
+ax0.set_title("Conductance vs. Applied Pressure")
 ax0.set_xlabel("Applied Pressure (kPa)")
 ax0.set_ylabel("Conductance (S)")
 ax2.set_title("Linear Models")
@@ -140,7 +140,7 @@ for node_name in full_data:
             avg_sensor_values_np = np.array(avg_sensor_values)
 
             # data scatter plots
-            ax0.plot(pressure_values, avg_sensor_values_np, '.', label = node_name)
+            ax0.scatter(pressure_values, avg_sensor_values_np, color='orange', edgecolor='black')
 
             rmse_values_methods = {}
             # regression line plots
@@ -179,13 +179,13 @@ for node_name in full_data:
             rmse_values_methods['exponential'] = rmse(avg_sensor_values_np,modeled_sensor_values)
 
             # velostat model plots
-            initial_weights = np.random.exponential(scale=1/10,size=5)
+            '''initial_weights = np.random.exponential(scale=1/10,size=5)
             bounds = (0,.95)
             (a,b,c,d,e),cov = optim.curve_fit(my_velostat_model,pressure_values_np,avg_sensor_values_np, bounds = bounds, p0 = initial_weights)
             modeled_sensor_values = my_velostat_model(pressure_values_np,a,b,c,d,e)
             ax10.plot(pressure_values_np, modeled_sensor_values, '.', label = node_name)
             ax11.plot(pressure_values_np, modeled_sensor_values - avg_sensor_values_np, '.', label = node_name)
-            rmse_values_methods['velostat'] = rmse(avg_sensor_values_np,modeled_sensor_values)
+            rmse_values_methods['velostat'] = rmse(avg_sensor_values_np,modeled_sensor_values)'''
 
             rmse_values_node[position] = rmse_values_methods
         rmse_values[node_name] = rmse_values_node

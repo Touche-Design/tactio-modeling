@@ -95,10 +95,10 @@ full_avg_sensor_values = {}
 full_regression_param = {}
 full_regression_param_box = {}
 lamdas = {}
-single_node = True
+single_node = 'node20'
 #full_cond_press_regression_param = {}
 for node_name in full_data:
-    if True:
+    if node_name == single_node:
         pressure_values = []
         avg_sensor_values = []
         std_sensor_values = []
