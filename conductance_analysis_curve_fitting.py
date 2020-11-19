@@ -66,14 +66,23 @@ for node in nodes:
 voltage = 3300
 r2 = 390
 
-ax0 = plt.subplot()
+fig1, ax0 = plt.subplots(ncols=1, facecolor='gray')
+ax0.set_facecolor('gray')
+ax0.spines['bottom'].set_color('white')
+ax0.spines['top'].set_color('white')
+ax0.spines['left'].set_color('white')
+ax0.spines['right'].set_color('white')
+ax0.xaxis.label.set_color('white')
+ax0.yaxis.label.set_color('white')
+ax0.tick_params(axis='x', colors='white')
+ax0.tick_params(axis='y', colors='white')
 fig2, (ax2, ax3) = plt.subplots(ncols=2)
 fig3, (ax4, ax5) = plt.subplots(ncols=2)
 fig4, (ax6, ax7) = plt.subplots(ncols=2)
 fig5, (ax8, ax9) = plt.subplots(ncols=2)
 fig6, (ax10, ax11) = plt.subplots(ncols=2)
 
-ax0.set_title("Conductance vs. Applied Pressure")
+ax0.set_title("Conductance vs. Applied Pressure", color='white')
 ax0.set_xlabel("Applied Pressure (kPa)")
 ax0.set_ylabel("Conductance (S)")
 ax2.set_title("Linear Models")
@@ -140,7 +149,7 @@ for node_name in full_data:
             avg_sensor_values_np = np.array(avg_sensor_values)
 
             # data scatter plots
-            ax0.scatter(pressure_values, avg_sensor_values_np, color='orange', edgecolor='black')
+            ax0.scatter(pressure_values, avg_sensor_values_np, color='#ff8500', edgecolor='black')
 
             rmse_values_methods = {}
             # regression line plots
@@ -170,13 +179,13 @@ for node_name in full_data:
             rmse_values_methods['logarithmic'] = rmse(avg_sensor_values_np,modeled_sensor_values)
 
             # exponential plots
-            initial_weights = np.random.exponential(scale=1/5,size=5)
+            '''initial_weights = np.random.exponential(scale=1/5,size=5)
             bounds = (0,1.5)
             (a,b,c,d,e),cov = optim.curve_fit(my_exp,pressure_values_np,avg_sensor_values_np, bounds = bounds, p0 = initial_weights)
             modeled_sensor_values = my_exp(pressure_values_np,a,b,c,d,e)
             ax8.plot(pressure_values_np, modeled_sensor_values, '.', label = node_name)
             ax9.plot(pressure_values_np, modeled_sensor_values - avg_sensor_values_np, '.', label = node_name)
-            rmse_values_methods['exponential'] = rmse(avg_sensor_values_np,modeled_sensor_values)
+            rmse_values_methods['exponential'] = rmse(avg_sensor_values_np,modeled_sensor_values)'''
 
             # velostat model plots
             '''initial_weights = np.random.exponential(scale=1/10,size=5)
@@ -214,3 +223,4 @@ print(np.average(np.array(logarithmic)))
 print(np.average(np.array(exponential)))
 print(np.average(np.array(velostat)))
 plt.show()
+fig1.savefig('sensor_scatterplot.png',transparent=True)
