@@ -98,7 +98,7 @@ lamdas = {}
 single_node = 'node20'
 #full_cond_press_regression_param = {}
 for node_name in full_data:
-    if node_name == single_node:
+    if node_name == node_name:
         pressure_values = []
         avg_sensor_values = []
         std_sensor_values = []

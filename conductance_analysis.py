@@ -55,19 +55,19 @@ full_pressure_values = {}
 full_avg_sensor_values = {}
 full_regression_param = {}
 full_cond_press_regression_param = {}
-fig1, (ax0, ax1) = plt.subplots(ncols=2)
-fig2, (ax2, ax3) = plt.subplots(ncols=2,sharey=True)
+fig1, (ax0, ax1, ax2) = plt.subplots(ncols=3)
+#fig2, (ax2, ax3) = plt.subplots(ncols=2,sharey=True)
 ax0.set_title("Conductance vs. Applied Pressure")
 ax0.set_xlabel("Applied Pressure (kPa)")
 ax0.set_ylabel("Conductance (S)")
-ax1.set_title("Total Residual")
+ax2.set_title("Total Residual")
 
-ax2.set_title("Conductance vs. Applied Pressure")
+#ax2.set_title("Conductance vs. Applied Pressure")
+ax1.set_xlabel("Applied Pressure (kPa)")
+#ax2.set_ylabel("Conductance (S)")
+ax1.set_title("Regression")
 ax2.set_xlabel("Applied Pressure (kPa)")
-ax2.set_ylabel("Conductance (S)")
-ax3.set_title("Regression")
-ax3.set_xlabel("Applied Pressure (kPa)")
-ax3.set_ylabel("Conductance (S)")
+#ax3.set_ylabel("Conductance (S)")
 
 for node_name in full_data:
     pressure_values = []
@@ -118,17 +118,17 @@ for node_name in full_data:
         full_max_sensor_values_node[position] = max_sensor_values
     
     ax0.plot(pressure_values, avg_sensor_values, '.', label = node_name)
-    ax2.plot(pressure_values, avg_sensor_values, '.', label = node_name)
+    #ax2.plot(pressure_values, avg_sensor_values, '.', label = node_name)
     pressure_values = np.array(pressure_values)
     slope, intercept, r_value, p_value, std_err = linregress(pressure_values, avg_sensor_values)
     full_regression_param[node_name] = (slope, intercept)
-    ax1.plot(pressure_values, pressure_values * slope + intercept - avg_sensor_values, '.', label = node_name)
+    ax2.plot(pressure_values, pressure_values * slope + intercept - avg_sensor_values, '.', label = node_name)
 
     slope_2, intercept_2, r_value_2, p_value_2, std_err_2 = linregress(avg_sensor_values,pressure_values)
 
     full_cond_press_regression_param[node_name] = (slope_2, intercept_2)
 
-ax2.set_prop_cycle(None)
+#ax2.set_prop_cycle(None)
 max_offset = 0
 min_offset = 999
 max_slope_regression = 0
@@ -139,7 +139,7 @@ average_offset_holder = 0
 for node_name in full_regression_param:
     current_slope = full_regression_param[node_name][0] 
     current_offset = full_regression_param[node_name][1]
-    ax3.plot(full_pressure_values[node_name], full_pressure_values[node_name] * current_slope + current_offset,'-', label = node_name + " regression")
+    ax1.plot(full_pressure_values[node_name], full_pressure_values[node_name] * current_slope + current_offset,'-', label = node_name + " regression")
 
     average_slope_holder = average_slope_holder+ current_slope
     average_offset_holder = average_offset_holder+current_offset
@@ -166,10 +166,10 @@ pressure_values = np.arange(start=0, stop=250, step=1)
 max_regression = pressure_values*max_slope_regression + max_offset
 min_regression = pressure_values*min_slope_regression + min_offset
 ave_regression = pressure_values*average_slope_holder + average_offset_holder
-ax3.plot(pressure_values, max_regression,'--',color='black',alpha=0.5)
-ax3.plot(pressure_values, min_regression,'--',color='black',alpha=0.5)
-ax3.fill_between(pressure_values, max_regression, min_regression,color='black',alpha=0.1)
-ax3.plot(pressure_values,ave_regression,'-.',color='black',label='average regression')
-ax3.legend()
+ax1.plot(pressure_values, max_regression,'--',color='black',alpha=0.5)
+ax1.plot(pressure_values, min_regression,'--',color='black',alpha=0.5)
+ax1.fill_between(pressure_values, max_regression, min_regression,color='black',alpha=0.1)
+ax1.plot(pressure_values,ave_regression,'-.',color='black',label='average regression')
+ax1.legend()
 print(full_cond_press_regression_param)
 plt.show()
