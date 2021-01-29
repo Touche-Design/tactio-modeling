@@ -8,7 +8,8 @@ from scipy.stats import boxcox
 from scipy.special import inv_boxcox
 
 
-position_label = ['bl', 'br', 'tl','tr']
+#position_label = ['bl', 'br', 'tl','tr']
+position_label = ['all']
 file_path = 'cal_data'
 files_present = []
 nodes = []
@@ -112,7 +113,8 @@ for node_name in full_data:
             for weight in full_data[node_name][position]:
                 current_data = full_data[node_name][position]
                 current_data = np.array(current_data[weight])
-                current_conductance = current_data/(r2*voltage  - r2 * current_data)
+                #current_conductance = current_data/(r2*voltage  - r2 * current_data)
+                current_conductance = current_data
                 current_conductance_time_avg = np.average(current_conductance,axis=0)
 
                 # Samples the center 4 elements 
@@ -131,8 +133,10 @@ for node_name in full_data:
                 #In KPa
                 pressure = force / area / 1000
 
-                averaged_data = np.average(time_avg_center_sample)
-                pressure_values.append(pressure)
+                #averaged_data = np.average(time_avg_center_sample)
+                averaged_data = np.average(current_conductance_time_avg)
+                #pressure_values.append(pressure)
+                pressure_values.append(weight)
                 avg_sensor_values.append(averaged_data)
                 sample_data = np.array(current_data)
 
@@ -216,7 +220,7 @@ for node_name in full_regression_param:
         ax9.plot(full_pressure_values[node_name][position], recovered_regression, '.', label = node_name + " regression")
         ax11.plot(full_pressure_values[node_name][position], recovered_regression - full_avg_sensor_values[node_name][position], '.', label = node_name)
 
-'''
+
 average_slope_holder = average_slope_holder/len(nodes)
 average_offset_holder = average_offset_holder/len(nodes)
 
@@ -229,5 +233,5 @@ ax3.plot(pressure_values, min_regression,'--',color='black',alpha=0.5)
 ax3.fill_between(pressure_values, max_regression, min_regression,color='black',alpha=0.1)
 ax3.plot(pressure_values,ave_regression,'-.',color='black',label='average regression')
 #ax3.legend()
-#print(full_cond_press_regression_param)'''
+#print(full_cond_press_regression_param)
 plt.show()

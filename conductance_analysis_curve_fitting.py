@@ -21,7 +21,8 @@ def my_exp(x,a,b,c,d,e):
 def my_velostat_model(x,a,b,c,d,e):
     return a*(np.power(c*(x+e),d)) + b
 
-position_label = ['bl', 'br', 'tl','tr']
+#position_label = ['bl', 'br', 'tl','tr']
+position_label = ['all']
 file_path = 'cal_data'
 files_present = []
 nodes = []
@@ -79,8 +80,8 @@ ax0.tick_params(axis='y', colors='white')
 fig2, (ax2, ax3) = plt.subplots(ncols=2)
 fig3, (ax4, ax5) = plt.subplots(ncols=2)
 fig4, (ax6, ax7) = plt.subplots(ncols=2)
-fig5, (ax8, ax9) = plt.subplots(ncols=2)
-fig6, (ax10, ax11) = plt.subplots(ncols=2)
+#fig5, (ax8, ax9) = plt.subplots(ncols=2)
+#fig6, (ax10, ax11) = plt.subplots(ncols=2)
 
 ax0.set_title("Conductance vs. Applied Pressure", color='white')
 ax0.set_xlabel("Applied Pressure (kPa)")
@@ -99,14 +100,14 @@ ax6.set_title("Logarithmic Models")
 ax6.set_xlabel("Applied Pressure (kPa)")
 ax6.set_ylabel("Conductance (S)")
 ax7.set_title("Total Residual")
-ax8.set_title("Exponential Models")
-ax8.set_xlabel("Applied Pressure (kPa)")
-ax8.set_ylabel("Conductance (S)")
-ax9.set_title("Total Residual")
-ax10.set_title("Velostat Model")
-ax10.set_xlabel("Applied Pressure (kPa)")
-ax10.set_ylabel("Conductance (S)")
-ax11.set_title("Total Residual")
+#ax8.set_title("Exponential Models")
+#ax8.set_xlabel("Applied Pressure (kPa)")
+#ax8.set_ylabel("Conductance (S)")
+#ax9.set_title("Total Residual")
+#ax10.set_title("Velostat Model")
+#ax10.set_xlabel("Applied Pressure (kPa)")
+#ax10.set_ylabel("Conductance (S)")
+#ax11.set_title("Total Residual")
 
 single_node = 'node20'
 #full_cond_press_regression_param = {}
@@ -121,7 +122,8 @@ for node_name in full_data:
             for weight in full_data[node_name][position]:
                 current_data = full_data[node_name][position]
                 current_data = np.array(current_data[weight])
-                current_conductance = current_data/(r2*voltage  - r2 * current_data)
+                #current_conductance = current_data/(r2*voltage  - r2 * current_data)
+                current_conductance = current_data
                 current_conductance_time_avg = np.average(current_conductance,axis=0)
 
                 # Samples the center 4 elements 
@@ -140,8 +142,10 @@ for node_name in full_data:
                 #In KPa
                 pressure = force / area / 1000
 
-                averaged_data = np.average(time_avg_center_sample)
-                pressure_values.append(pressure)
+                #averaged_data = np.average(time_avg_center_sample)
+                averaged_data = current_conductance_time_avg
+                #pressure_values.append(pressure)
+                pressure_values.append(weight)
                 avg_sensor_values.append(averaged_data)
                 sample_data = np.array(current_data)
 
@@ -149,6 +153,8 @@ for node_name in full_data:
             avg_sensor_values_np = np.array(avg_sensor_values)
 
             # data scatter plots
+            print(pressure_values)
+            print(avg_sensor_values_np)
             ax0.scatter(pressure_values, avg_sensor_values_np, color='#ff8500', edgecolor='black')
 
             rmse_values_methods = {}
