@@ -69,7 +69,7 @@ ax3.set_ylabel("Voltage (V)")
 full_pressure_values = {}
 full_avg_sensor_values = {}
 full_regression_param = {}
-single_node = 'node20'
+single_node = 'node8'
 for node_name in full_data:
     if node_name == single_node:
         pressure_values = []

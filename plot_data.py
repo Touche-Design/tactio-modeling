@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import os
 
-position_label = ['bl', 'br', 'tl','tr']
+position_label = ['all']
 file_path = 'cal_data'
 files_present = []
 nodes = []
