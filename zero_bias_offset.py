@@ -86,28 +86,10 @@ for node_name in full_data:
             for weight in full_data[node_name][position]:
                 current_data = full_data[node_name][position]
                 current_data = np.array(current_data[weight])
-                current_conductance = current_data/(r2*voltage  - r2 * current_data)
-                #current_conductance = current_data
-                current_conductance_time_avg = np.average(current_conductance,axis=0)
+                current_voltage = current_data
+                current_voltage_time_avg = np.average(current_voltage,axis=0)
 
-                # Samples the center 4 elements 
-                time_avg_center_sample = np.zeros((2,2))
-                time_avg_center_sample[0][0] = current_conductance_time_avg[1][1]
-                time_avg_center_sample[0][1] = current_conductance_time_avg[1][2]
-                time_avg_center_sample[1][0] = current_conductance_time_avg[2][1]
-                time_avg_center_sample[1][1] = current_conductance_time_avg[2][2]
-            
-                # 0.125 in -> 0.003175 m
-                # looking at 4 points so area is 4x
-                area = 0.003175**2 * 4
-                # weight in grams
-                force = (weight/1000)*9.81
-
-                #In KPa
-                pressure = force / area / 1000
-
-                #averaged_data = np.average(time_avg_center_sample)
-                averaged_data = np.average(current_conductance_time_avg)
+                averaged_data = np.average(current_voltage_time_avg)
                 #pressure_values.append(pressure)
                 pressure_values.append(weight)
                 avg_sensor_values.append(averaged_data)
@@ -139,50 +121,12 @@ for node_name in full_data:
         full_regression_param[node_name] = full_regression_param_node
 
 
+print(full_avg_sensor_values)
+ratio = []
+node_value_min = []
+node_value_max = []
+for node in full_avg_sensor_values:
 
-ax2.set_prop_cycle(None)
-max_offset = 0
-min_offset = 999
-max_slope_regression = 0
-min_slope_regression = 999
-average_slope_holder = 0
-average_offset_holder = 0
+    ratio.append(np.min(full_avg_sensor_values[node]['all'])/np.max(full_avg_sensor_values[node]['all']))
 
-for node_name in full_regression_param:
-    for position in position_label:
-        current_slope = full_regression_param[node_name][position][0] 
-        current_offset = full_regression_param[node_name][position][1]
-        ax3.plot(full_pressure_values[node_name][position], full_pressure_values[node_name][position] * current_slope + current_offset,'.', label = node_name + " regression")
-
-        average_slope_holder = average_slope_holder+ current_slope
-        average_offset_holder = average_offset_holder+current_offset
-
-        if current_slope > max_slope_regression:
-            max_slope_regression = current_slope
-    
-        if current_slope < min_slope_regression:
-            min_slope_regression = current_slope
-
-        if current_offset > max_offset:
-            max_offset = current_offset
-    
-        if current_offset < min_offset:
-            min_offset = current_offset
-
-average_slope_holder = average_slope_holder/len(nodes)
-average_offset_holder = average_offset_holder/len(nodes)
-#pressure_values = np.arange(start=0, stop=250, step=1)
-pressure_values = np.arange(start=0, stop=4000, step=1)
-max_regression = pressure_values*max_slope_regression + max_offset
-min_regression = pressure_values*min_slope_regression + min_offset
-ave_regression = pressure_values*average_slope_holder + average_offset_holder
-print("avg slope:",average_slope_holder)
-print("avg offset:",average_offset_holder)
-ax3.plot(pressure_values, max_regression,'--',color='black',alpha=0.5)
-ax3.plot(pressure_values, min_regression,'--',color='black',alpha=0.5)
-ax3.fill_between(pressure_values, max_regression, min_regression,color='black',alpha=0.1)
-ax3.plot(pressure_values,ave_regression,'-.',color='black',label='average regression')
-ax2.legend()
-ax3.legend()
-#print(full_cond_press_regression_param)
-plt.show()
+print(100*np.average(ratio))
