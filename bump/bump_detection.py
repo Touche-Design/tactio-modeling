@@ -62,6 +62,8 @@ def update(i):
         im1.set_data(grab_original_frame())
         im2.set_data(grab_processed_frame())
         index+=1
+    else:
+        return
 
 
 
@@ -101,7 +103,9 @@ processed_data = np.where(processed_data > press_time_thresh, 1.0, 0)
 
 im1 = ax1.imshow(grab_original_frame())
 im2 = ax2.imshow(grab_processed_frame(), cmap = 'gray', vmin = 0, vmax = 1)
-ani = FuncAnimation(plt.gcf(), update, interval=5)
+ani = FuncAnimation(plt.gcf(), update, interval=50)
+
+#ani.save('animation.mp4', fps=20)
 
 #ax1.plot(current_data[:, 1, 1])
 #ax2.plot(processed_data[:, 1, 1])
