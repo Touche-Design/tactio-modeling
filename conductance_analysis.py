@@ -56,6 +56,7 @@ r2 = 390
 
 fig1, (ax0, ax1) = plt.subplots(ncols=2)
 fig2, (ax2, ax3) = plt.subplots(ncols=2)
+fig3, ax4 = plt.subplots()
 
 ax0.set_title("Voltage vs. Applied Weight")
 ax0.set_xlabel("Weight (g)")
@@ -73,6 +74,7 @@ full_pressure_values = {}
 full_avg_sensor_values = {}
 full_regression_param = {}
 single_node = 'node6'
+compare_node = 'node9'
 #full_cond_press_regression_param = {}
 for node_name in full_data:
     if node_name == node_name:
@@ -119,8 +121,14 @@ for node_name in full_data:
             avg_sensor_values_np = np.array(avg_sensor_values)
 
             # linear data scatter plots
-            ax0.plot(pressure_values, avg_sensor_values_np, '.', label = node_name)
-            ax2.plot(pressure_values, avg_sensor_values_np, '.', label = node_name)
+            ax0.plot(pressure_values_np, avg_sensor_values_np, '.', label = node_name)
+            ax2.plot(pressure_values_np, avg_sensor_values_np, '.', label = node_name)
+            if node_name == compare_node:
+                if position == 'all':
+                    compare_data = avg_sensor_values_np
+                    compare_pressures = pressure_values_np
+                    ax4.plot(compare_pressures, compare_data, '.', label = compare_node)
+                    
 
             # regression line plots
             # linear regression
@@ -178,8 +186,8 @@ pressure_values = np.arange(start=0, stop=4000, step=1)
 max_regression = pressure_values*max_slope_regression + max_offset
 min_regression = pressure_values*min_slope_regression + min_offset
 ave_regression = pressure_values*average_slope_holder + average_offset_holder
-print("avg slope:",average_slope_holder)
-print("avg offset:",average_offset_holder)
+#print("avg slope:",average_slope_holder)
+#print("avg offset:",average_offset_holder)
 ax3.plot(pressure_values, max_regression,'--',color='black',alpha=0.5)
 ax3.plot(pressure_values, min_regression,'--',color='black',alpha=0.5)
 ax3.fill_between(pressure_values, max_regression, min_regression,color='black',alpha=0.1)
@@ -196,6 +204,12 @@ for node_name in full_regression_param:
 save_name = "regression_params.json"
 with open(save_name, "w") as outfile:  
     json.dump(full_regression_param, outfile, cls=NumpyArrayEncoder)
-print(full_regression_param)
 
+#plot original and shifted data with average model line
+slope = full_regression_param[compare_node][0]
+intercept = full_regression_param[compare_node][1]
+shifted_data =  compare_data * slope + intercept
+ax4.plot(compare_pressures,shifted_data,'.',label='shifted data')
+ax4.plot(pressure_values,ave_regression,'-.',color='black',label='average regression')
+ax4.legend()
 plt.show()
