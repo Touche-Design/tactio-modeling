@@ -4,6 +4,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from scipy.stats import linregress
 import os
+from NumpyArrayEncoder import NumpyArrayEncoder
+import json
 
 
 #position_label = ['bl', 'br', 'tl','tr']
@@ -184,5 +186,16 @@ ax3.fill_between(pressure_values, max_regression, min_regression,color='black',a
 ax3.plot(pressure_values,ave_regression,'-.',color='black',label='average regression')
 ax2.legend()
 ax3.legend()
-#print(full_cond_press_regression_param)
+
+#outputs file of regression base on 'all' type measurements 
+export_param = {}
+for node_name in full_regression_param:
+    slope = average_slope_holder/full_regression_param[node_name]['all'][0]
+    intercept = average_offset_holder - full_regression_param[node_name]['all'][1]*average_slope_holder/full_regression_param[node_name][position][0]
+    full_regression_param[node_name]= (slope,intercept)
+save_name = "regression_params.json"
+with open(save_name, "w") as outfile:  
+    json.dump(full_regression_param, outfile, cls=NumpyArrayEncoder)
+print(full_regression_param)
+
 plt.show()
