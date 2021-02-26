@@ -134,7 +134,7 @@ for node_name in full_regression_param:
     ax3.plot(weight, weight * current_slope + current_offset,'.', label = node_name + " regression")
 
     slope_sum = slope_sum + current_slope
-    offset_sum = offset_sum + offset_sum
+    offset_sum = offset_sum +  current_offset
 
     if current_slope > max_slope_regression:
         max_slope_regression = current_slope
